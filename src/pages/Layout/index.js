@@ -6,7 +6,7 @@ import {
   LogoutOutlined
 } from '@ant-design/icons'
 import './index.scss'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 
 const { Header, Sider } = Layout
 
@@ -34,12 +34,18 @@ const GeekLayout = () => {
     // console.log(item.key)
     navigate(item.key)
   }
+
+  // 反向高亮
+  // 1. 获取当前路由路径
+  const location = useLocation()
+  // console.log(location)
+  const pathName = location.pathname
   return (
     <Layout>
       <Header className="header">
         <div className="logo" />
         <div className="user-info">
-          <span className="user-name">柴柴老师</span>
+          <span className="user-name">青芥</span>
           <span className="user-logout">
             <Popconfirm title="是否确认退出？" okText="退出" cancelText="取消">
               <LogoutOutlined /> 退出
@@ -52,7 +58,7 @@ const GeekLayout = () => {
           <Menu
             mode="inline"
             theme="dark"
-            defaultSelectedKeys={['1']}
+            selectedKeys={pathName}
             items={items}
             style={{ height: '100%', borderRight: 0 }}
             onClick={onMenuClick}
