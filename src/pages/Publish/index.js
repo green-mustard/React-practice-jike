@@ -123,6 +123,7 @@ const Publish = () => {
                 listType="picture-card"
                 showUploadList
                 action={'http://geek.itheima.net/v1_0/upload'}
+                maxCount={imageType}
                 onChange={onImageChange}
               >
                 <div style={{ marginTop: 8 }}>
