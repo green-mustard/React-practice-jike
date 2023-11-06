@@ -17,7 +17,7 @@ import './index.scss'
 // 导入富文本插件库及样式
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { getChannelAPI } from '@/apis/articles'
+import { createArticleAPI, getChannelAPI } from '@/apis/articles'
 
 const { Option } = Select
 
@@ -34,6 +34,25 @@ const Publish = () => {
     // 2. 调用函数
     getChannelList()
   }, [])
+
+  // 提交表单的回调
+  const onFinish = formData => {
+    console.log(formData)
+    // 从表单数据中结构出需要的内容
+    const { title, content, channel_id } = formData
+    // 1.按接口文档的格式处理收集的表单数据
+    const reqData = {
+      title,
+      content,
+      channel_id,
+      cover: {
+        type: 0,
+        images: ['']
+      }
+    }
+    // 2.调用接口提交
+    createArticleAPI(reqData)
+  }
   return (
     <div className="publish">
       <Card
@@ -50,6 +69,7 @@ const Publish = () => {
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 16 }}
           initialValues={{ type: 1 }}
+          onFinish={onFinish}
         >
           <Form.Item
             label="标题"
