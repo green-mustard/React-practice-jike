@@ -7,7 +7,8 @@ import {
   Input,
   Upload,
   Space,
-  Select
+  Select,
+  message
 } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
@@ -37,7 +38,10 @@ const Publish = () => {
 
   // 提交表单的回调
   const onFinish = formData => {
-    console.log(formData)
+    // console.log(formData)
+    // 校验封面图片类型和实际上传图片数量是否相符
+    if (imageList.length !== imageType)
+      return message.warning('封面类型和图片数量不匹配')
     // 从表单数据中结构出需要的内容
     const { title, content, channel_id } = formData
     // 1.按接口文档的格式处理收集的表单数据
@@ -46,8 +50,8 @@ const Publish = () => {
       content,
       channel_id,
       cover: {
-        type: 0,
-        images: ['']
+        type: imageType, // 封面模式
+        images: imageList.map(item => item.response.data.url) // 图片列表
       }
     }
     // 2.调用接口提交
