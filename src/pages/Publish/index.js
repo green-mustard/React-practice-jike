@@ -11,15 +11,29 @@ import {
 } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import './index.scss'
 
 // 导入富文本插件库及样式
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
+import { getChannelAPI } from '@/apis/articles'
 
 const { Option } = Select
 
 const Publish = () => {
+  // 获取频道列表
+  const [channelList, setChannelList] = useState([])
+  useEffect(() => {
+    // 1.封装函数，在函数体内调用接口
+    const getChannelList = async () => {
+      const res = await getChannelAPI()
+      // console.log(res)
+      setChannelList(res.data.channels)
+    }
+    // 2. 调用函数
+    getChannelList()
+  }, [])
   return (
     <div className="publish">
       <Card
@@ -50,7 +64,11 @@ const Publish = () => {
             rules={[{ required: true, message: '请选择文章频道' }]}
           >
             <Select placeholder="请选择文章频道" style={{ width: 400 }}>
-              <Option value={0}>推荐</Option>
+              {channelList.map(item => (
+                <Option value={item.id} key={item.id}>
+                  {item.name}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
           <Form.Item
