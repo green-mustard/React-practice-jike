@@ -12,29 +12,20 @@ import {
 } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import './index.scss'
 
 // 导入富文本插件库及样式
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { createArticleAPI, getChannelAPI } from '@/apis/articles'
+import { createArticleAPI } from '@/apis/articles'
+import { useChannel } from '@/hooks/useChannel'
 
 const { Option } = Select
 
 const Publish = () => {
   // 获取频道列表
-  const [channelList, setChannelList] = useState([])
-  useEffect(() => {
-    // 1.封装函数，在函数体内调用接口
-    const getChannelList = async () => {
-      const res = await getChannelAPI()
-      // console.log(res)
-      setChannelList(res.data.channels)
-    }
-    // 2. 调用函数
-    getChannelList()
-  }, [])
+  const { channelList } = useChannel()
 
   // 提交表单的回调
   const onFinish = formData => {

@@ -8,6 +8,8 @@ import locale from 'antd/es/date-picker/locale/zh_CN'
 import { Table, Tag, Space } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import img404 from '@/assets/error.png'
+import { useEffect, useState } from 'react'
+import { useChannel } from '@/hooks/useChannel'
 
 const { Option } = Select
 const { RangePicker } = DatePicker
@@ -84,6 +86,20 @@ const Article = () => {
     }
   ]
 
+  // 获取频道列表
+  const { channelList } = useChannel()
+
+  // 获取文章列表
+  const [articleList, setArticleList] = useState([])
+  useEffect(() => {
+    const getArticleList = async () => {
+      // const res = await ()
+      // console.log(res.data.results)
+      // setArticleList(res.data.results)
+    }
+    getArticleList()
+  })
+
   return (
     <div>
       <Card
@@ -107,13 +123,12 @@ const Article = () => {
           </Form.Item>
 
           <Form.Item label="频道" name="channel_id">
-            <Select
-              placeholder="请选择文章频道"
-              defaultValue="lucy"
-              style={{ width: 120 }}
-            >
-              <Option value="jack">Jack</Option>
-              <Option value="lucy">Lucy</Option>
+            <Select placeholder="请选择文章频道" style={{ width: 120 }}>
+              {channelList.map(item => (
+                <Option value="item.id" key={item.id}>
+                  {item.name}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
 
