@@ -17,7 +17,7 @@ export function createArticleAPI(data) {
 }
 
 // 3.获取文章列表
-export function getArticleAPI() {
+export function getArticleListAPI() {
   return request({
     url: 'mp/articles',
     method: 'GET'

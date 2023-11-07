@@ -11,11 +11,18 @@ import img404 from '@/assets/error.png'
 import { useEffect, useState } from 'react'
 import { useChannel } from '@/hooks/useChannel'
 
+import { getArticleListAPI } from '@/apis/articles'
+
 const { Option } = Select
 const { RangePicker } = DatePicker
 
 const Article = () => {
   // 准备列数据
+  // 定义状态枚举
+  const status = {
+    1: <Tag color="warning">待审核</Tag>,
+    2: <Tag color="success">审核通过</Tag>
+  }
   const columns = [
     {
       title: '封面',
@@ -35,7 +42,10 @@ const Article = () => {
     {
       title: '状态',
       dataIndex: 'status',
-      render: data => <Tag color="green">审核通过</Tag>
+      // data => 后端返回的状态status，根据它来做条件渲染， 1为待审核，2为审核通过
+      // 通过对象取值的方法，使用枚举来定义对应关系，data当作key传入
+      // 如果要适配的状态只有两个，可以使用三元条件来渲染
+      render: data => status[data]
     },
     {
       title: '发布时间',
@@ -91,14 +101,16 @@ const Article = () => {
 
   // 获取文章列表
   const [articleList, setArticleList] = useState([])
+  const [count, setCount] = useState(0)
   useEffect(() => {
     const getArticleList = async () => {
-      // const res = await ()
+      const res = await getArticleListAPI()
       // console.log(res.data.results)
-      // setArticleList(res.data.results)
+      setArticleList(res.data.results)
+      setCount(res.data.total_count)
     }
     getArticleList()
-  })
+  }, [])
 
   return (
     <div>
@@ -145,8 +157,8 @@ const Article = () => {
         </Form>
       </Card>
       {/* 表格区域 */}
-      <Card title={`根据筛选条件共查询到 count 条结果：`}>
-        <Table rowKey="id" columns={columns} dataSource={data} />
+      <Card title={`根据筛选条件共查询到 ${count} 条结果：`}>
+        <Table rowKey="id" columns={columns} dataSource={articleList} />
       </Card>
     </div>
   )
