@@ -1,6 +1,15 @@
 // 引入筛选区资源
 import { Link } from 'react-router-dom'
-import { Card, Breadcrumb, Form, Button, Radio, DatePicker, Select } from 'antd'
+import {
+  Card,
+  Breadcrumb,
+  Form,
+  Button,
+  Radio,
+  DatePicker,
+  Select,
+  Pagination
+} from 'antd'
 // 引入时间选择器汉化包
 import locale from 'antd/es/date-picker/locale/zh_CN'
 
@@ -101,6 +110,7 @@ const Article = () => {
   // 获取频道列表
 
   //1. 准备参数
+
   const [reqData, setReqData] = useState({
     status: '',
     channel_id: '',
@@ -137,6 +147,24 @@ const Article = () => {
       end_pubdate: formData.date[1].format('YYYY-MM-DD')
     })
     // 4. 重新拉取文章列表 + 渲染table，这里的逻辑是重复的，需要做到复用，这里的reqData发生变化，就会重复执行副作用函数
+  }
+
+  // 页码改变时的回调
+  const onPageChange = page => {
+    // console.log(page)
+    // 修改参数依赖项，引发数据的重新获取
+    setReqData({
+      ...reqData,
+      page
+    })
+  }
+  // 切换每页显示条目数的回调
+  const onShowSizeChange = (current, pageSize) => {
+    console.log(current, pageSize)
+    setReqData({
+      ...reqData,
+      per_page: pageSize
+    })
   }
 
   return (
@@ -185,7 +213,23 @@ const Article = () => {
       </Card>
       {/* 表格区域 */}
       <Card title={`根据筛选条件共查询到 ${count} 条结果：`}>
-        <Table rowKey="id" columns={columns} dataSource={articleList} />
+        <Table
+          rowKey="id"
+          columns={columns}
+          dataSource={articleList}
+          locale={locale}
+          pagination={false}
+        />
+        <Pagination
+          current={reqData.page}
+          pageSize={reqData.per_page}
+          total={count}
+          showSizeChanger
+          pageSizeOptions={['10', '20', '30']}
+          onChange={onPageChange}
+          onShowSizeChange={onShowSizeChange}
+          style={{ marginTop: '16px', textAlign: 'right' }}
+        />
       </Card>
     </div>
   )
