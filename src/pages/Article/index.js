@@ -17,12 +17,14 @@ const { Option } = Select
 const { RangePicker } = DatePicker
 
 const Article = () => {
-  // 准备列数据
+  const { channelList } = useChannel()
+
   // 定义状态枚举
   const status = {
     1: <Tag color="warning">待审核</Tag>,
     2: <Tag color="success">审核通过</Tag>
   }
+  // 准备列的数据
   const columns = [
     {
       title: '封面',
@@ -80,37 +82,62 @@ const Article = () => {
       }
     }
   ]
-  // 准备表格body数据
-  const data = [
-    {
-      id: '8218',
-      comment_count: 0,
-      cover: {
-        images: []
-      },
-      like_count: 0,
-      pubdate: '2019-03-11 09:00:00',
-      read_count: 2,
-      status: 2,
-      title: 'wkwebview离线化加载h5资源解决方案'
-    }
-  ]
+  // 准备表格body的假数据
+  // const data = [
+  //   {
+  //     id: '8218',
+  //     comment_count: 0,
+  //     cover: {
+  //       images: []
+  //     },
+  //     like_count: 0,
+  //     pubdate: '2019-03-11 09:00:00',
+  //     read_count: 2,
+  //     status: 2,
+  //     title: 'wkwebview离线化加载h5资源解决方案'
+  //   }
+  // ]
 
   // 获取频道列表
-  const { channelList } = useChannel()
+
+  //1. 准备参数
+  const [reqData, setReqData] = useState({
+    status: '',
+    channel_id: '',
+    begin_pubdate: '',
+    end_pubdate: '',
+    page: 1,
+    per_page: 6
+  })
 
   // 获取文章列表
   const [articleList, setArticleList] = useState([])
   const [count, setCount] = useState(0)
   useEffect(() => {
     const getArticleList = async () => {
-      const res = await getArticleListAPI()
+      const res = await getArticleListAPI(reqData)
       // console.log(res.data.results)
       setArticleList(res.data.results)
       setCount(res.data.total_count)
     }
     getArticleList()
-  }, [])
+  }, [reqData])
+
+  // 筛选功能
+  // 2. 获取当前的筛选数据
+  const onFinish = formData => {
+    // console.log(formData)
+    // 3. 把表单收集到的数据放入到参数中
+    // 因为修改对象格式的数据，不能直接修改，采用展开运算符...这种不可变的方式
+    setReqData({
+      ...reqData,
+      channel_id: formData.channel_id,
+      status: formData.status,
+      begin_pubdate: formData.date[0].format('YYYY-MM-DD'),
+      end_pubdate: formData.date[1].format('YYYY-MM-DD')
+    })
+    // 4. 重新拉取文章列表 + 渲染table，这里的逻辑是重复的，需要做到复用，这里的reqData发生变化，就会重复执行副作用函数
+  }
 
   return (
     <div>
@@ -125,11 +152,11 @@ const Article = () => {
         }
         style={{ marginBottom: 20 }}
       >
-        <Form initialValues={{ status: '' }}>
+        <Form initialValues={{ status: '' }} onFinish={onFinish}>
           <Form.Item label="状态" name="status">
             <Radio.Group>
               <Radio value={''}>全部</Radio>
-              <Radio value={0}>草稿</Radio>
+              <Radio value={1}>待审核</Radio>
               <Radio value={2}>审核通过</Radio>
             </Radio.Group>
           </Form.Item>
@@ -137,7 +164,7 @@ const Article = () => {
           <Form.Item label="频道" name="channel_id">
             <Select placeholder="请选择文章频道" style={{ width: 120 }}>
               {channelList.map(item => (
-                <Option value="item.id" key={item.id}>
+                <Option value={item.id} key={item.id}>
                   {item.name}
                 </Option>
               ))}
