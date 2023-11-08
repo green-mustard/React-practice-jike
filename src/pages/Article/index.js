@@ -88,12 +88,12 @@ const Article = () => {
               onClick={() => navigate(`/publish?id=${data.id}`)}
             />
             <Popconfirm
-              title="Delete the task"
-              description="Are you sure to delete this task?"
+              title="删除"
+              description="确定删除该文章吗?"
               onConfirm={() => onConfirm(data)}
               onCancel={cancel}
-              okText="Yes"
-              cancelText="No"
+              okText="确定"
+              cancelText="取消"
             >
               <Button
                 type="primary"

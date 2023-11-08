@@ -11,7 +11,7 @@ import {
   message
 } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import './index.scss'
 
@@ -21,16 +21,17 @@ import 'react-quill/dist/quill.snow.css'
 import { createArticleAPI } from '@/apis/articles'
 import { useChannel } from '@/hooks/useChannel'
 
-import { getArticleDetail } from '@/apis/articles'
+import { getArticleDetail, updateArticle } from '@/apis/articles'
 
 const { Option } = Select
 
 const Publish = () => {
   // 获取频道列表
   const { channelList } = useChannel()
+  const navigate = useNavigate()
 
   // 提交表单的回调
-  const onFinish = formData => {
+  const onFinish = async formData => {
     // console.log(formData)
     // 校验封面图片类型和实际上传图片数量是否相符
     if (imageList.length !== imageType)
@@ -44,11 +45,39 @@ const Publish = () => {
       channel_id,
       cover: {
         type: imageType, // 封面模式
-        images: imageList.map(item => item.response.data.url) // 图片列表
+        // 下面的url处理逻辑只是新增文章时候的逻辑
+        // images: imageList.map(item => item.response.data.url)
+        // 二次编辑文章的时候需要对数据做另外的处理
+        images: imageList.map(item => {
+          if (item.response) {
+            return item.response.data.url
+          } else {
+            return item.url
+          }
+        })
       }
     }
     // 2.调用接口提交
-    createArticleAPI(reqData)
+    // 处理调用不同的接口，如果是新增状态则调用新增的接口，如果是再次编辑则调用更新的接口
+    if (articleId) {
+      // 调用更新文章的接口
+      const response = await updateArticle({ ...reqData, id: articleId })
+      if (response) {
+        message.success('更新文章成功')
+        navigate('/article')
+      } else {
+        message.error('更新文章失败')
+      }
+    } else {
+      // 调用新增文章的接口
+      const response = await createArticleAPI(reqData)
+      if (response) {
+        message.success('发布文章成功')
+        navigate('/article')
+      } else {
+        message.error('发布文章失败')
+      }
+    }
   }
 
   // 上传图片的回调
@@ -105,6 +134,16 @@ const Publish = () => {
       fetchData()
     }
   }, [articleId, form])
+
+  // 点击发布文章按钮后的回调
+  const publishArticle = () => {
+    if (articleId) {
+      message.success('更新文章成功')
+    } else {
+      message.success('发布文章成功')
+    }
+    navigate('/article')
+  }
 
   return (
     <div className="publish">
@@ -187,7 +226,7 @@ const Publish = () => {
           <Form.Item wrapperCol={{ offset: 4 }}>
             <Space>
               <Button size="large" type="primary" htmlType="submit">
-                发布文章
+                {articleId ? '更新' : '发布'}文章
               </Button>
             </Space>
           </Form.Item>

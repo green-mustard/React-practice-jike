@@ -9,7 +9,7 @@ export function getChannelAPI() {
 // 2.提交文章表单
 export function createArticleAPI(data) {
   return request({
-    url: 'mp/articles?draft=false',
+    url: '/mp/articles?draft=false',
     method: 'POST',
     // body参数
     data
@@ -19,7 +19,7 @@ export function createArticleAPI(data) {
 // 3.获取文章列表
 export function getArticleListAPI(params) {
   return request({
-    url: 'mp/articles',
+    url: '/mp/articles',
     method: 'GET',
     params
   })
@@ -28,7 +28,7 @@ export function getArticleListAPI(params) {
 // 4.删除某条文章
 export function deleteArticle(target) {
   return request({
-    url: `mp/articles/${target}`,
+    url: `/mp/articles/${target}`,
     method: 'DELETE'
   })
 }
@@ -36,7 +36,16 @@ export function deleteArticle(target) {
 // 5.获取文章详情
 export function getArticleDetail(target) {
   return request({
-    url: `mp/articles/${target}`,
+    url: `/mp/articles/${target}`,
     method: 'GET'
+  })
+}
+
+// 6.更新文章
+export function updateArticle(data) {
+  return request({
+    url: `mp/articles/${data.id}?draft=false`,
+    method: 'PUT',
+    data
   })
 }
