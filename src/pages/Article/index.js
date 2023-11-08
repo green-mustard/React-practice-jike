@@ -8,7 +8,8 @@ import {
   Radio,
   DatePicker,
   Select,
-  Pagination
+  Pagination,
+  Popconfirm
 } from 'antd'
 // 引入时间选择器汉化包
 import locale from 'antd/es/date-picker/locale/zh_CN'
@@ -20,7 +21,7 @@ import img404 from '@/assets/error.png'
 import { useEffect, useState } from 'react'
 import { useChannel } from '@/hooks/useChannel'
 
-import { getArticleListAPI } from '@/apis/articles'
+import { getArticleListAPI, deleteArticle } from '@/apis/articles'
 
 const { Option } = Select
 const { RangePicker } = DatePicker
@@ -80,12 +81,21 @@ const Article = () => {
         return (
           <Space size="middle">
             <Button type="primary" shape="circle" icon={<EditOutlined />} />
-            <Button
-              type="primary"
-              danger
-              shape="circle"
-              icon={<DeleteOutlined />}
-            />
+            <Popconfirm
+              title="Delete the task"
+              description="Are you sure to delete this task?"
+              onConfirm={() => onConfirm(data)}
+              onCancel={cancel}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button
+                type="primary"
+                danger
+                shape="circle"
+                icon={<DeleteOutlined />}
+              />
+            </Popconfirm>
           </Space>
         )
       }
@@ -166,6 +176,19 @@ const Article = () => {
       per_page: pageSize
     })
   }
+
+  // 删除功能确认的回调 => 采用异步方式，保证删除完成后再更新列表，重新渲染
+  const onConfirm = async data => {
+    console.log('delete', data.id)
+    await deleteArticle(data.id)
+    // 更新文章列表，重新渲染页面数据
+    setReqData({
+      ...reqData
+    })
+  }
+
+  // 取消删除的回到
+  const cancel = () => {}
 
   return (
     <div>

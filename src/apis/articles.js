@@ -24,3 +24,11 @@ export function getArticleListAPI(params) {
     params
   })
 }
+
+// 4.删除某条文章
+export function deleteArticle(target) {
+  return request({
+    url: `mp/articles/${target}`,
+    method: 'DELETE'
+  })
+}
