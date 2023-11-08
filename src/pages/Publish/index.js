@@ -82,7 +82,7 @@ const Publish = () => {
       // console.log(res)
       // 优化res.data.cover的数据解构
       const data = res.data
-      const { cover } = data.cover
+      const { cover } = data
       // 2. 调用实例方法，完成回填
       form.setFieldsValue({
         ...data,
@@ -100,7 +100,10 @@ const Publish = () => {
         })
       )
     }
-    fetchData()
+    // 只有在有id的情况下才能调用此函数回填数据，否则会报错
+    if (articleId) {
+      fetchData()
+    }
   }, [articleId, form])
 
   return (
@@ -110,7 +113,7 @@ const Publish = () => {
           <Breadcrumb
             items={[
               { title: <Link to={'/'}>首页</Link> },
-              { title: '发布文章' }
+              { title: `${articleId ? '编辑' : '发布'}文章` }
             ]}
           />
         }
