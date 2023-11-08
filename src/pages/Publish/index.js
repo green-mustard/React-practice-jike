@@ -11,8 +11,8 @@ import {
   message
 } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import { Link } from 'react-router-dom'
-import { useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import './index.scss'
 
 // 导入富文本插件库及样式
@@ -20,6 +20,8 @@ import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import { createArticleAPI } from '@/apis/articles'
 import { useChannel } from '@/hooks/useChannel'
+
+import { getArticleDetail } from '@/apis/articles'
 
 const { Option } = Select
 
@@ -64,6 +66,26 @@ const Publish = () => {
     setImageType(e.target.value)
   }
 
+  // 回填数据
+  const [searchParams] = useSearchParams()
+  const articleId = searchParams.get('id')
+  // console.log(articleId)
+
+  // 获取实例
+  // const res = Form.useForm()
+  // console.log(res)
+  const [form] = Form.useForm()
+  useEffect(() => {
+    // 1. 通过id获取数据
+    async function fetchData() {
+      const res = await getArticleDetail(articleId)
+      console.log(res)
+      // 2. 调用实例方法，完成回填
+      form.setFieldsValue(res.data)
+    }
+    fetchData()
+  }, [articleId, form])
+
   return (
     <div className="publish">
       <Card
@@ -81,6 +103,7 @@ const Publish = () => {
           wrapperCol={{ span: 16 }}
           initialValues={{ type: 0 }}
           onFinish={onFinish}
+          form={form}
         >
           <Form.Item
             label="标题"

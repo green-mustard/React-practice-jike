@@ -32,3 +32,11 @@ export function deleteArticle(target) {
     method: 'DELETE'
   })
 }
+
+// 5.获取文章详情
+export function getArticleDetail(target) {
+  return request({
+    url: `mp/articles/${target}`,
+    method: 'GET'
+  })
+}
