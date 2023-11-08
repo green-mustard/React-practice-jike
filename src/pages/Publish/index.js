@@ -79,9 +79,26 @@ const Publish = () => {
     // 1. 通过id获取数据
     async function fetchData() {
       const res = await getArticleDetail(articleId)
-      console.log(res)
+      // console.log(res)
+      // 优化res.data.cover的数据解构
+      const data = res.data
+      const { cover } = data.cover
       // 2. 调用实例方法，完成回填
-      form.setFieldsValue(res.data)
+      form.setFieldsValue({
+        ...data,
+        type: cover.type
+      })
+      // 为什么现在的写法无法回填封面信息
+      // 数据解构的问题： set方法 -> Form要求的字段是{type: 3}， 而获取的字段是{cover: {type: 3}}
+
+      // 回填图片列表
+      setImageType(cover.type)
+      // 显示图片 储存图片列表的格式要和上传时候的格式保持一致，必须是一个对象包含url字段
+      setImageList(
+        cover.images.map(url => {
+          return { url }
+        })
+      )
     }
     fetchData()
   }, [articleId, form])
@@ -143,6 +160,7 @@ const Publish = () => {
                 action={'http://geek.itheima.net/v1_0/upload'}
                 maxCount={imageType}
                 onChange={onImageChange}
+                fileList={imageList} // 绑定数据，数据驱动视图
               >
                 <div style={{ marginTop: 8 }}>
                   <PlusOutlined />
