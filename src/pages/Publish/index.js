@@ -135,16 +135,6 @@ const Publish = () => {
     }
   }, [articleId, form])
 
-  // 点击发布文章按钮后的回调
-  const publishArticle = () => {
-    if (articleId) {
-      message.success('更新文章成功')
-    } else {
-      message.success('发布文章成功')
-    }
-    navigate('/article')
-  }
-
   return (
     <div className="publish">
       <Card
